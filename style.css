@@ -255,6 +255,11 @@ body {
   background: var(--lavender);
 }
 
+.spotify-embed {
+  max-width: 420px;
+  margin: 1.2rem auto 0;
+}
+
 @media (max-width: 480px) {
   .letter-card {
     padding-left: 1.4rem;
