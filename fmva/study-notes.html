@@ -532,6 +532,26 @@
             <p>What you were picturing has a name: the <b>equity ratio</b>, <span class="mono">Equity ÷ Assets</span> — the actual percentage of the asset base financed by equity. It's the exact reciprocal of the multiplier (multiplier = 1 ÷ equity ratio). $40 equity funding $100 of assets is a 40% equity ratio <em>and</em> a 2.5× multiplier — same fact, two ways of stating it, moving in opposite directions as leverage changes. Shrink equity to $20 against the same $100 of assets: equity ratio falls to 20%, multiplier rises to 5×.</p>
             <p>Why DuPont uses the multiplier form and not the ratio form: because ROE = ROA × ROA's-leverage-adjustment needs something that <em>multiplies</em> ROA up as leverage rises, and Assets÷Equity does that (values &gt;1, growing with leverage). Equity÷Assets would need to divide, which doesn't cancel cleanly in the algebra. The multiplier is the form that makes the identity work — worth knowing it's leverage expressed as "how many times the equity is levered up," not "what percentage is equity."</p>
           </div>
+
+          <div class="fu">
+            <div class="stamp">2026-09-01 · on §01</div>
+            <h4>"Explain more: why is ROE 'mathematically inseparable' from leverage, and why does that make it the most gameable ratio?"</h4>
+            <p>Two different things are being said in that line, worth separating. <b>"The cancellation trick"</b> is just the algebra — Assets cancels out of ROA × Equity multiplier, leaving NI÷Equity. True by construction, not really an insight. <b>What the cancellation proves</b> is the identity read the other direction: <span class="mono">ROE = ROA × Leverage</span>. That's not a correlation, it's a definition — every ROE number you will ever see is structurally built from an operating piece and a financing piece, whether anyone bothers to split it or not. "Mathematically inseparable" means exactly that: you cannot state a company's ROE without it having implicitly encoded how levered that company is.</p>
+            <p>The worked version of "hold ROA flat, push ROE up":</p>
+            <div class="tablewrap">
+              <table>
+                <thead><tr><th></th><th class="num">Assets</th><th class="num">Net income</th><th class="num">ROA</th><th class="num">Equity</th><th class="num">Debt</th><th class="num">Multiplier</th><th class="num">ROE</th></tr></thead>
+                <tbody>
+                  <tr><td>A</td><td class="num">$100</td><td class="num">$8</td><td class="num">8%</td><td class="num">$100</td><td class="num">$0</td><td class="num">1.0×</td><td class="num pos">8%</td></tr>
+                  <tr><td>B</td><td class="num">$100</td><td class="num">$8</td><td class="num">8%</td><td class="num">$50</td><td class="num">$50</td><td class="num">2.0×</td><td class="num pos">16%</td></tr>
+                  <tr><td>C</td><td class="num">$100</td><td class="num">$8</td><td class="num">8%</td><td class="num">$20</td><td class="num">$80</td><td class="num">5.0×</td><td class="num pos">40%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Same assets, same profit, same ROA — by any operating measure the business did the identical thing in all three rows. The only variable that moved is how the $100 of assets is financed. ROE went from 8% to 40%: a 5x'd headline number produced with zero operating improvement, purely by shrinking the equity base and replacing it with debt. (In reality more debt usually adds interest expense, which would pull NI and ROA down slightly — held flat here on purpose, to isolate the multiplier's effect in isolation from that second-order drag.)</p>
+            <p>That's the gameability: a CFO who wants a better-looking ROE doesn't need to improve the business at all — issue debt, buy back stock, shrink the equity denominator, done. Compare that to <b>ROIC</b> (return on invested capital) or plain ROA, which sit on top of the asset base rather than equity — you can't move those with a buyback, because the denominator doesn't shrink when equity does. That asymmetry is exactly why ROE is the one "good number" that gets manipulated and the others don't get quoted in isolation either.</p>
+            <p>And it's exactly the mechanism an LBO runs on, deliberately rather than as a red flag: a PE firm financing a deal mostly with debt is engineering a high equity multiplier on purpose, so the same dollar of enterprise-value growth produces a much bigger percentage return on a much smaller equity check. The reflex this builds — always asking "did the business get better, or did the equity just get smaller?" — is the same reflex you'll use reading comps and building a returns bridge later.</p>
+          </div>
         </div>
 
         <div class="tags">
