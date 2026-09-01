@@ -205,6 +205,47 @@
   @media (max-width:700px){.queue ol{columns:1}}
   .queue li{break-inside:avoid;margin:6px 0}
 
+  /* ---- quiz --------------------------------------------------------------- */
+  .quizcard{background:var(--surface);border:1px solid var(--rule);border-radius:2px;box-shadow:var(--shadow);
+    padding:30px 30px 26px;scroll-margin-top:16px}
+  .quizhead{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between}
+  .quizhead h2{font-size:1.6rem;margin:.18em 0 0;font-weight:700;letter-spacing:-.01em}
+  .quizscore{font-family:"IBM Plex Mono",monospace;font-size:.875rem;color:var(--ink-2);
+    display:flex;align-items:center;gap:12px;white-space:nowrap}
+  .quizscore b{color:var(--ink);font-size:1rem}
+  .quizbar{width:120px;height:6px;border-radius:3px;background:var(--rule-soft);overflow:hidden}
+  .quizbar i{display:block;height:100%;background:var(--link);width:0%;transition:width .25s ease}
+  @media (prefers-reduced-motion:reduce){.quizbar i{transition:none}}
+  .quizreset{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;
+    background:transparent;color:var(--muted);border:1px solid var(--rule);border-radius:2px;padding:5px 9px;cursor:pointer}
+  .quizreset:hover{color:var(--flag);border-color:var(--flag)}
+  .quizgroup{margin-top:26px}
+  .quizgroup>.eyebrow{margin-bottom:10px}
+  .qz{border:1px solid var(--rule);border-radius:2px;padding:16px 18px;margin:12px 0;background:var(--surface-2)}
+  .qz-q{font-weight:600;margin:0 0 12px;max-width:var(--maxw);font-size:1.0625rem}
+  .qz-btns{display:flex;gap:8px}
+  .qz-btns button{
+    font-family:"IBM Plex Mono",monospace;font-size:var(--fs-sm);letter-spacing:.05em;text-transform:uppercase;
+    background:var(--surface);color:var(--ink-2);border:1px solid var(--rule);border-radius:2px;
+    padding:7px 18px;cursor:pointer;min-width:74px;
+  }
+  .qz-btns button:hover:not(:disabled){border-color:var(--input);color:var(--input)}
+  .qz-btns button:disabled{cursor:default}
+  .qz.answered .qz-btns button:disabled{opacity:.5}
+  .qz.answered .qz-btns button.chosen{opacity:1;font-weight:600}
+  .qz.correct .qz-btns button.chosen{background:var(--link-wash);border-color:var(--link);color:var(--link)}
+  .qz.wrong .qz-btns button.chosen{background:var(--flag-wash);border-color:var(--flag);color:var(--flag)}
+  .qz.wrong .qz-btns button.correct-answer{border-color:var(--link);color:var(--link)}
+  .qz-fb{margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);font-size:.9375rem;max-width:var(--maxw)}
+  .qz-fb[hidden]{display:none}
+  .qz-fb .verdict{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);letter-spacing:.1em;
+    text-transform:uppercase;display:block;margin-bottom:6px}
+  .qz.correct .qz-fb .verdict{color:var(--link)}
+  .qz.wrong .qz-fb .verdict{color:var(--flag)}
+  .quizdone{margin-top:22px;padding:16px 18px;border-radius:2px;background:var(--input-wash);
+    border-left:3px solid var(--input);font-size:.9375rem}
+  .quizdone[hidden]{display:none}
+
   footer.foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--rule);
     color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);letter-spacing:.05em}
   .noresult{color:var(--muted);font-style:italic;padding:20px 0}
@@ -238,6 +279,7 @@
       <ul class="toc" id="toc">
         <li><a href="#three-statement">01 · Three-statement linkage</a></li>
         <li><a href="#dupont">02 · DuPont pyramid (ROE)</a></li>
+        <li><a href="#quiz">03 · Quiz — yes/no</a></li>
         <li class="queued"><a href="#queue">Queued from the course →</a></li>
       </ul>
       <div class="railbtns">
@@ -586,6 +628,118 @@
         </div>
       </article>
 
+      <!-- ============================== QUIZ ================================ -->
+      <article class="quizcard" id="quiz">
+        <div class="quizhead">
+          <div>
+            <div class="eyebrow">Yes / no · both notes</div>
+            <h2>Quick check</h2>
+          </div>
+          <div class="quizscore">
+            <span><b id="qz-correct">0</b>/<span id="qz-total">14</span> correct</span>
+            <div class="quizbar"><i id="qz-bar"></i></div>
+            <button type="button" class="quizreset" id="qz-reset">Reset</button>
+          </div>
+        </div>
+        <p style="max-width:var(--maxw);color:var(--ink-2);margin-top:14px">Answer yes or no. Every question flips a real misconception, several are ones this conversation actually hit — the feedback explains the trap, not just the answer.</p>
+
+        <div class="quizgroup">
+          <div class="eyebrow">Three-statement linkage</div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">1 · Should you build a three-statement model by forecasting the cash flow statement directly, the same way you forecast the income statement?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No. The cash flow statement has no independent drivers — every line on it restates something already forecast on the IS or implied by a BS assumption. Forecast it directly and you're forecasting the same quantity twice with nothing forcing the two to agree; the balance sheet then can't close except by a plug.</p></div>
+          </div>
+
+          <div class="qz" data-answer="yes">
+            <p class="qz-q">2 · Depreciation rises $10, tax rate is 25%. Does cash go up by exactly $2.50?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>Yes — that $2.50 is the depreciation tax shield. Net income falls $7.50 (the $10 charge less the $2.50 tax saved), D&amp;A of $10 is added back on the CF statement, netting to +$2.50 of cash. The whole effect is the tax saved, nothing more.</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">3 · Is charging interest on the <em>average</em> of opening and closing debt the safer choice in a timed modelling test?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — average-balance interest is what <em>creates</em> the circular reference (closing debt depends on the sweep, which depends on cash, which depends on net income, which depends on interest). Opening-balance interest reads a number that's already final, breaking the loop entirely. It's the auditable, fast-to-build choice under time pressure — state out loud that you're doing it to avoid circularity.</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">4 · If your model balances only because you hardcoded a plug into "other assets," is that an acceptable way to close it?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — that's a model that balances and lies, and a specific, fatal tell in a modelling test. The only acceptable plug is the revolver. If cash would go negative, the revolver draws; if there's surplus above the minimum, it repays. Never cash, never equity, never "other."</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">5 · Is an increase in accounts receivable a <em>source</em> of cash?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — a <em>use</em>. Receivables rising means more revenue is sitting uncollected; cash hasn't come in yet. This sign gets flipped constantly by candidates mixing "all CF items entered as positives, formula subtracts" with "enter the signed change directly" in the same schedule.</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">6 · If the balance-sheet break is the exact same dollar amount in every forecast period, is that most likely a flow problem (a BS item moving without a CF line)?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — a <em>constant</em> break points to a historical hardcode or a missing opening-balance link. A break that <em>grows</em> each period, compounding forward, is the signature of a flow problem. Read the shape across the row before touching a single formula.</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">7 · Should the minimum cash balance in a cash sweep be set to zero, to maximize free cash flow?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — real businesses need working cash to operate. Setting the minimum to zero flatters free cash flow and understates how much the revolver would actually need to draw in a downturn. The minimum is an assumption, not a default of zero.</p></div>
+          </div>
+        </div>
+
+        <div class="quizgroup">
+          <div class="eyebrow">DuPont pyramid</div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">8 · Does a <em>higher</em> equity multiplier mean a <em>larger</em> share of the asset base is financed by equity?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — the opposite. Equity multiplier = Assets ÷ Equity; it rises as equity finances a <em>smaller</em> share and debt fills the rest. The percentage actually financed by equity is a different ratio, the equity ratio (Equity ÷ Assets) — the exact reciprocal, moving the opposite way.</p></div>
+          </div>
+
+          <div class="qz" data-answer="yes">
+            <p class="qz-q">9 · Can ROE jump from 16% to 40% purely from a debt-funded stock buyback, with net income and total assets completely unchanged?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>Yes — the GreenLeaf Foods case. Borrow $150M, use it to retire $150M of stock: debt up, equity down, assets unchanged (the cash nets to zero). Same profit, same assets, same ROA — but a much smaller equity denominator triples the ROE. Nothing about the business changed.</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">10 · Will two companies with identical operating margin and identical asset turnover always show the same ROE?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — Company X vs. Company Y showed 20% operating margin and 1.25× turnover on both sides, yet ROE was ≈60% vs. ≈22.5%. The gap was entirely interest burden, tax burden, and equity multiplier: financing and jurisdiction, not operating performance.</p></div>
+          </div>
+
+          <div class="qz" data-answer="yes">
+            <p class="qz-q">11 · In the 5-step extended DuPont pyramid, is interest burden calculated as EBT ÷ EBIT?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>Yes. It measures how much operating profit survives after interest — a burden of 1.00 means no interest expense at all; further below 1.00 means more of EBIT is being eaten by financing cost.</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">12 · If ROE rises purely because leverage increased — margin and turnover both flat — does that always represent genuine value creation?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No. The business isn't more profitable or efficient — it's more financially levered, which raises ROE mechanically while also raising risk (fixed interest obligations, less cushion in a downturn). This is exactly the "is that good news?" interview trap.</p></div>
+          </div>
+
+          <div class="qz" data-answer="no">
+            <p class="qz-q">13 · Can ROIC (return on invested capital) be inflated by a stock buyback the same way ROE can?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>No — that's exactly why ROIC gets quoted alongside ROE. ROIC sits on top of invested capital/assets, not equity, so shrinking the equity base with a buyback doesn't move it. ROE is uniquely exposed because equity is the one balance-sheet quantity management can shrink through pure financial engineering.</p></div>
+          </div>
+
+          <div class="qz" data-answer="yes">
+            <p class="qz-q">14 · In an LBO returns bridge, is "deleveraging" conceptually the same lever as the equity multiplier in DuPont?</p>
+            <div class="qz-btns"><button data-choice="yes">Yes</button><button data-choice="no">No</button></div>
+            <div class="qz-fb" hidden><span class="verdict"></span><p>Yes — mirror images. EV = Debt + Equity; pay debt down while EV holds flat and equity's slice grows mechanically, inflating IRR with zero operating change. Same arithmetic as the equity multiplier, just running in the opposite direction (shrinking debt instead of shrinking equity).</p></div>
+          </div>
+        </div>
+
+        <div class="quizdone" id="qz-done" hidden>
+          <b id="qz-done-text"></b>
+        </div>
+      </article>
+
       <!-- ============================== QUEUE ============================== -->
       <article class="note queue" id="queue" data-key="queue">
         <div class="eyebrow">You said DuPont closes out the course</div>
@@ -672,6 +826,87 @@
   document.addEventListener("keydown", function(e){
     if (e.key === "/" && document.activeElement !== q){ e.preventDefault(); q.focus(); q.select(); }
     if (e.key === "Escape" && document.activeElement === q){ q.value = ""; q.dispatchEvent(new Event("input")); q.blur(); }
+  });
+
+  /* --- quiz ---------------------------------------------------------------- */
+  var LS_QUIZ = "fmva.quiz.v1";
+  var qzState = read(LS_QUIZ);
+  var qzItems = Array.prototype.slice.call(document.querySelectorAll(".qz"));
+  qzItems.forEach(function(el, i){ el.dataset.qid = "q" + i; });
+  var qzTotalEl = document.getElementById("qz-total");
+  var qzCorrectEl = document.getElementById("qz-correct");
+  var qzBar = document.getElementById("qz-bar");
+  var qzDone = document.getElementById("qz-done");
+  var qzDoneText = document.getElementById("qz-done-text");
+  if (qzTotalEl) qzTotalEl.textContent = qzItems.length;
+
+  function qzRender(el){
+    var qid = el.dataset.qid;
+    var saved = qzState[qid];
+    if (!saved) return;
+    var answer = el.dataset.answer;
+    var isCorrect = saved.choice === answer;
+    el.classList.add("answered", isCorrect ? "correct" : "wrong");
+    var btns = el.querySelectorAll(".qz-btns button");
+    btns.forEach(function(b){
+      b.disabled = true;
+      if (b.getAttribute("data-choice") === saved.choice) b.classList.add("chosen");
+      if (!isCorrect && b.getAttribute("data-choice") === answer) b.classList.add("correct-answer");
+    });
+    var fb = el.querySelector(".qz-fb");
+    fb.hidden = false;
+    fb.querySelector(".verdict").textContent = isCorrect ? "Correct" : "Not quite";
+  }
+
+  function qzScore(){
+    var answered = 0, correct = 0;
+    qzItems.forEach(function(el){
+      var s = qzState[el.dataset.qid];
+      if (s){ answered++; if (s.choice === el.dataset.answer) correct++; }
+    });
+    if (qzCorrectEl) qzCorrectEl.textContent = correct;
+    if (qzBar) qzBar.style.width = (qzItems.length ? (correct / qzItems.length * 100) : 0) + "%";
+    if (qzDone){
+      if (answered === qzItems.length && qzItems.length > 0){
+        qzDone.hidden = false;
+        var pct = Math.round(correct / qzItems.length * 100);
+        var msg = correct === qzItems.length
+          ? "14 for 14. Every trap in both notes, including the ones this conversation actually walked into — you'd catch them cold now."
+          : "Done — " + correct + "/" + qzItems.length + " (" + pct + "%). Re-open the note sections for the ones you missed; the feedback names exactly which paragraph to re-read.";
+        qzDoneText.textContent = msg;
+      } else {
+        qzDone.hidden = true;
+      }
+    }
+  }
+
+  qzItems.forEach(function(el){
+    qzRender(el);
+    el.querySelectorAll(".qz-btns button").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        if (el.classList.contains("answered")) return;
+        var qid = el.dataset.qid;
+        qzState[qid] = { choice: btn.getAttribute("data-choice") };
+        write(LS_QUIZ, qzState);
+        qzRender(el);
+        qzScore();
+      });
+    });
+  });
+  qzScore();
+
+  var qzReset = document.getElementById("qz-reset");
+  if (qzReset) qzReset.addEventListener("click", function(){
+    qzState = {};
+    write(LS_QUIZ, qzState);
+    qzItems.forEach(function(el){
+      el.classList.remove("answered","correct","wrong");
+      el.querySelectorAll(".qz-btns button").forEach(function(b){
+        b.disabled = false; b.classList.remove("chosen","correct-answer");
+      });
+      el.querySelector(".qz-fb").hidden = true;
+    });
+    qzScore();
   });
 })();
 </script>
