@@ -446,6 +446,7 @@
           </table>
         </div>
         <p class="mono" style="max-width:var(--maxw)">ROE = ROA × Equity multiplier = (NI ÷ Assets) × (Assets ÷ Equity) = NI ÷ Equity</p>
+        <p style="max-width:var(--maxw);color:var(--ink-2);font-size:.9375rem"><b>Careful with the direction:</b> the multiplier is Assets ÷ Equity, not Equity ÷ Assets. It answers "how many dollars of assets does each dollar of equity support?" — so a <em>higher</em> multiplier means equity is doing <em>less</em> of the financing, not more. A company with $40 of equity funding $100 of assets has a 2.5× multiplier and an equity-financed share of 40% (60% debt-financed); shrink equity to $20 against the same $100 of assets and the multiplier rises to 5× while the equity-financed share falls to 20%. Multiplier up = equity share down = leverage up.</p>
         <p>The reason this is worth dwelling on isn't the cancellation trick — it's what the cancellation <em>proves</em>: ROE is mathematically inseparable from how levered the business is. A company can hold ROA flat and still push ROE up simply by financing more of its asset base with debt. That single fact is the reason nobody serious quotes ROE without also knowing what's driving it — it's the most gameable "good number" in ratio analysis.</p>
 
         <h3><span class="n">02</span>The 3-lever (classic) pyramid</h3>
@@ -521,6 +522,17 @@
             </ul>
           </div>
         </details>
+
+        <div class="followups">
+          <span class="label">Follow-ups · added as you ask</span>
+          <div class="fu">
+            <div class="stamp">2026-09-01 · on §01</div>
+            <h4>"I thought the equity multiplier was about how much of the asset base is financed by equity?"</h4>
+            <p>Close, but the direction is inverted. The multiplier is <span class="mono">Assets ÷ Equity</span> — dollars of assets per dollar of equity — and it <em>rises</em> as equity finances a <em>smaller</em> share of the balance sheet, not a larger one.</p>
+            <p>What you were picturing has a name: the <b>equity ratio</b>, <span class="mono">Equity ÷ Assets</span> — the actual percentage of the asset base financed by equity. It's the exact reciprocal of the multiplier (multiplier = 1 ÷ equity ratio). $40 equity funding $100 of assets is a 40% equity ratio <em>and</em> a 2.5× multiplier — same fact, two ways of stating it, moving in opposite directions as leverage changes. Shrink equity to $20 against the same $100 of assets: equity ratio falls to 20%, multiplier rises to 5×.</p>
+            <p>Why DuPont uses the multiplier form and not the ratio form: because ROE = ROA × ROA's-leverage-adjustment needs something that <em>multiplies</em> ROA up as leverage rises, and Assets÷Equity does that (values &gt;1, growing with leverage). Equity÷Assets would need to divide, which doesn't cancel cleanly in the algebra. The multiplier is the form that makes the identity work — worth knowing it's leverage expressed as "how many times the equity is levered up," not "what percentage is equity."</p>
+          </div>
+        </div>
 
         <div class="tags">
           <span class="tag">ROE</span><span class="tag">DuPont</span><span class="tag">ratio analysis</span>
