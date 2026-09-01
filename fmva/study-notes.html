@@ -1,0 +1,519 @@
+<title>FMVA Working Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* ---- tokens: light (the un-stamped default) ---------------------------- */
+  :root{
+    --ground:#eef1f6;
+    --surface:#ffffff;
+    --surface-2:#f6f8fb;
+    --ink:#111a2b;
+    --ink-2:#3a465c;
+    --muted:#68758d;
+    --rule:#d8dfe9;
+    --rule-soft:#e7ecf3;
+    /* the modelling colour code: blue = hardcoded input, green = link from
+       another schedule, red = flag. Used as the page's semantic palette. */
+    --input:#1b4fd8;
+    --link:#0a7355;
+    --flag:#b3261e;
+    --input-wash:#e8eefc;
+    --link-wash:#e3f2ec;
+    --flag-wash:#fbeae8;
+    --shadow:0 1px 2px rgba(17,26,43,.05), 0 8px 24px -16px rgba(17,26,43,.35);
+    --fs-xs:.75rem; --fs-sm:.8125rem; --fs-base:1.0625rem; --fs-lg:1.1875rem;
+    --maxw:65ch;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0c111b;
+      --surface:#141b28;
+      --surface-2:#1a2231;
+      --ink:#e6ebf4;
+      --ink-2:#bcc6d6;
+      --muted:#8a97ad;
+      --rule:#2a3546;
+      --rule-soft:#212b3a;
+      --input:#7fa6ff;
+      --link:#4cc79c;
+      --flag:#ff8b7e;
+      --input-wash:#18233c;
+      --link-wash:#122d27;
+      --flag-wash:#2e1a1a;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0c111b; --surface:#141b28; --surface-2:#1a2231;
+    --ink:#e6ebf4; --ink-2:#bcc6d6; --muted:#8a97ad;
+    --rule:#2a3546; --rule-soft:#212b3a;
+    --input:#7fa6ff; --link:#4cc79c; --flag:#ff8b7e;
+    --input-wash:#18233c; --link-wash:#122d27; --flag-wash:#2e1a1a;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+    font-size:var(--fs-base); line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,summary{font-family:"Zilla Slab",Rockwell,Georgia,serif;text-wrap:balance}
+  .mono,code,kbd,.tag,.eyebrow,th,.num{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  a{color:var(--input)}
+  :focus-visible{outline:2px solid var(--input);outline-offset:2px;border-radius:3px}
+
+  /* ---- shell ------------------------------------------------------------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+  header.masthead{padding:44px 0 26px;border-bottom:1px solid var(--rule)}
+  .eyebrow{font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:clamp(2rem,4.4vw,2.9rem);line-height:1.08;margin:.35em 0 .25em;font-weight:700;letter-spacing:-.015em}
+  .standfirst{max-width:62ch;color:var(--ink-2);font-size:var(--fs-lg)}
+
+  .how{
+    margin-top:26px;background:var(--surface);border:1px solid var(--rule);
+    border-radius:2px;box-shadow:var(--shadow);padding:20px 22px;
+  }
+  .how h2{font-size:1rem;margin:0 0 10px;letter-spacing:.01em}
+  .how ol{margin:0;padding-left:1.15em;display:grid;gap:8px;color:var(--ink-2);font-size:.9375rem}
+  .how b{color:var(--ink)}
+
+  .cols{display:grid;grid-template-columns:1fr;gap:34px;margin-top:34px}
+  @media (min-width:1000px){
+    .cols{grid-template-columns:264px minmax(0,1fr);gap:44px;align-items:start}
+    aside.rail{position:sticky;top:18px;max-height:calc(100vh - 36px);overflow-y:auto}
+  }
+
+  /* ---- rail -------------------------------------------------------------- */
+  .rail{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-sm)}
+  .searchbox{position:relative;margin-bottom:14px}
+  .searchbox input{
+    width:100%;padding:9px 11px 9px 11px;font:inherit;color:var(--ink);
+    background:var(--surface);border:1px solid var(--rule);border-radius:2px;
+  }
+  .searchbox input::placeholder{color:var(--muted)}
+  .railhead{font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+  .toc{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+  .toc a{display:block;padding:5px 8px;color:var(--ink-2);text-decoration:none;border-left:2px solid var(--rule-soft)}
+  .toc a:hover{background:var(--surface);color:var(--ink);border-left-color:var(--input)}
+  .toc li.queued a{color:var(--muted);font-style:italic}
+  .railbtns{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+  .railbtns button{
+    font:inherit;font-size:var(--fs-xs);letter-spacing:.04em;text-transform:uppercase;
+    background:var(--surface);color:var(--ink-2);border:1px solid var(--rule);
+    border-radius:2px;padding:6px 9px;cursor:pointer;
+  }
+  .railbtns button:hover{border-color:var(--input);color:var(--input)}
+  .progress{margin-top:16px;color:var(--muted);font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase}
+
+  /* ---- note cards -------------------------------------------------------- */
+  .stack{display:grid;gap:30px;min-width:0}
+  article.note{
+    background:var(--surface);border:1px solid var(--rule);border-radius:2px;
+    box-shadow:var(--shadow);padding:30px 30px 26px;scroll-margin-top:16px;min-width:0;
+  }
+  article.note[hidden]{display:none}
+  .notehead{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:baseline;justify-content:space-between}
+  .note h2{font-size:1.6rem;line-height:1.15;margin:.18em 0 0;font-weight:700;letter-spacing:-.01em}
+  .oneline{
+    margin:16px 0 0;padding:12px 15px;background:var(--input-wash);
+    border-left:3px solid var(--input);font-size:var(--fs-lg);color:var(--ink);
+  }
+  .note p{max-width:var(--maxw)}
+  .note h3{font-size:1.06rem;margin:30px 0 6px;letter-spacing:.01em}
+  .note h3 .n{color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:.8em;margin-right:.5em}
+  .note ul,.note ol{max-width:var(--maxw);padding-left:1.2em}
+  .note li{margin:5px 0}
+
+  .understood{display:flex;align-items:center;gap:7px;font-family:"IBM Plex Mono",monospace;
+    font-size:var(--fs-xs);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none}
+  .understood input{accent-color:var(--link);width:15px;height:15px}
+  article.note.done{border-left:3px solid var(--link)}
+
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  .tag{font-size:var(--fs-xs);letter-spacing:.05em;padding:3px 7px;border:1px solid var(--rule);
+    color:var(--muted);border-radius:2px;background:var(--surface-2)}
+
+  /* tables */
+  .tablewrap{overflow-x:auto;margin:14px 0 4px;border:1px solid var(--rule);border-radius:2px}
+  table{border-collapse:collapse;width:100%;font-size:.9375rem;min-width:560px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  th{font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+     background:var(--surface-2);font-weight:500;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:0}
+  td.num,.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .pos{color:var(--link)} .neg{color:var(--flag)}
+
+  code{background:var(--surface-2);border:1px solid var(--rule-soft);padding:.08em .35em;font-size:.86em;border-radius:2px}
+
+  /* disclosures */
+  details.deep{margin:14px 0;border:1px solid var(--rule);border-radius:2px;background:var(--surface-2)}
+  details.deep>summary{
+    cursor:pointer;padding:11px 14px;font-size:.9375rem;font-weight:600;color:var(--ink);
+    list-style:none;display:flex;gap:10px;align-items:baseline;
+  }
+  details.deep>summary::-webkit-details-marker{display:none}
+  details.deep>summary::before{
+    content:"+";font-family:"IBM Plex Mono",monospace;color:var(--input);font-weight:600;
+  }
+  details.deep[open]>summary::before{content:"–"}
+  details.deep>summary::after{
+    content:"deeper";margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  }
+  details.deep .body{padding:2px 16px 14px;border-top:1px solid var(--rule-soft)}
+  details.deep .body>*:first-child{margin-top:12px}
+
+  /* callouts */
+  .callout{margin:20px 0;padding:16px 18px;border-radius:2px;background:var(--link-wash);border-left:3px solid var(--link)}
+  .callout .label{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);letter-spacing:.12em;
+    text-transform:uppercase;color:var(--link);display:block;margin-bottom:6px}
+  .callout p:last-child,.callout ul:last-child{margin-bottom:0}
+  .callout.warn{background:var(--flag-wash);border-left-color:var(--flag)}
+  .callout.warn .label{color:var(--flag)}
+
+  /* drills */
+  .drill{border:1px dashed var(--rule);border-radius:2px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+  .drill .q{font-weight:600;margin:0 0 10px}
+  .drill button{
+    font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);letter-spacing:.08em;text-transform:uppercase;
+    background:transparent;color:var(--input);border:1px solid var(--input);border-radius:2px;
+    padding:5px 10px;cursor:pointer;
+  }
+  .drill button:hover{background:var(--input-wash)}
+  .drill .a[hidden]{display:none}
+  .drill .a{margin-top:12px;padding-top:12px;border-top:1px solid var(--rule-soft)}
+  .drill .a p:first-child{margin-top:0}
+
+  /* follow-ups written back into the note */
+  .followups{margin-top:30px;border-top:1px solid var(--rule);padding-top:6px}
+  .followups>.label{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);display:block;margin:14px 0 10px}
+  .fu{border-left:3px solid var(--input);padding:2px 0 2px 16px;margin:16px 0}
+  .fu .stamp{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em}
+  .fu h4{font-size:1rem;margin:4px 0 6px}
+
+  /* queue */
+  .queue{background:transparent;border:1px dashed var(--rule);box-shadow:none}
+  .queue h2{font-size:1.25rem}
+  .queue ol{max-width:none;columns:2;column-gap:34px;font-size:.9375rem;color:var(--ink-2)}
+  @media (max-width:700px){.queue ol{columns:1}}
+  .queue li{break-inside:avoid;margin:6px 0}
+
+  footer.foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--rule);
+    color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);letter-spacing:.05em}
+  .noresult{color:var(--muted);font-style:italic;padding:20px 0}
+  .noresult[hidden]{display:none}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">FMVA · working notes · maintained by Claude</div>
+    <h1>FMVA Working Notes</h1>
+    <p class="standfirst">One living page for the whole certificate. Every concept keeps its full explanation in one place — including the follow-up questions you ask later, written back into the section they belong to.</p>
+
+    <div class="how">
+      <h2>How this solves the scrolling problem</h2>
+      <ol>
+        <li><b>The note is the source of truth, not the chat.</b> When you ask me to go deeper on one line inside a concept, I don't just answer in the terminal — I edit that concept's section here and republish to the same link. Reload the page and the answer is sitting exactly where the question came from.</li>
+        <li><b>Depth is layered, not linear.</b> Each concept has a core body you can always read top-to-bottom, and <code>+</code> disclosures for the mechanics underneath. Open only what you need; the shape of the concept stays visible.</li>
+        <li><b>Find instead of scroll.</b> Press <kbd>/</kbd> to jump to the filter box, type anything (<code>circular</code>, <code>WACC</code>, <code>NWC</code>), and the page narrows to matching sections. Tick <b>understood</b> on a concept and it stays ticked in your browser.</li>
+      </ol>
+    </div>
+  </header>
+
+  <div class="cols">
+    <aside class="rail">
+      <div class="searchbox">
+        <input id="q" type="search" placeholder="Filter notes  ( / )" aria-label="Filter notes">
+      </div>
+      <div class="railhead">Contents</div>
+      <ul class="toc" id="toc">
+        <li><a href="#three-statement">01 · Three-statement linkage</a></li>
+        <li class="queued"><a href="#queue">Queued from the course →</a></li>
+      </ul>
+      <div class="railbtns">
+        <button type="button" id="expand">Expand all</button>
+        <button type="button" id="collapse">Collapse all</button>
+      </div>
+      <div class="progress" id="progress">0 of 1 marked understood</div>
+    </aside>
+
+    <main class="stack" id="stack">
+
+      <!-- ============================== NOTE 01 ============================ -->
+      <article class="note" id="three-statement" data-key="n01">
+        <div class="notehead">
+          <div>
+            <div class="eyebrow">Building a 3-Statement Model · core</div>
+            <h2>Three-statement linkage</h2>
+          </div>
+          <label class="understood"><input type="checkbox" data-done="n01"> understood</label>
+        </div>
+
+        <p class="oneline">A three-statement model is not three documents. It is one balance sheet, observed twice, with the income statement and cash flow statement explaining the entire difference between the two observations.</p>
+
+        <p>That sentence is the whole engine. Everything below is the mechanics of making it true in Excel. If you can hold it, the model stops being a memorised web of links and becomes a single constraint you can reason from: <em>every change in a balance-sheet line, between period t−1 and t, must be explained by a line on the income statement or the cash flow statement.</em> Anything unexplained is why your model doesn't balance.</p>
+
+        <h3><span class="n">01</span>The linkage ledger</h3>
+        <p>Learn it as flows between statements, not as cell references. The direction matters more than the address.</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>From</th><th>To</th><th>Mechanic</th><th>Sign</th></tr></thead>
+            <tbody>
+              <tr><td>IS · Net income</td><td>CF · top line</td><td>Starting point for the indirect method</td><td class="num">+</td></tr>
+              <tr><td>IS · Net income</td><td>BS · Retained earnings</td><td>RE<sub>t</sub> = RE<sub>t−1</sub> + NI − dividends</td><td class="num">+</td></tr>
+              <tr><td>IS · D&amp;A</td><td>CF · operating</td><td>Non-cash charge added back</td><td class="num pos">+</td></tr>
+              <tr><td>IS · D&amp;A</td><td>BS · PP&amp;E (accum. dep.)</td><td>PP&amp;E<sub>t</sub> = PP&amp;E<sub>t−1</sub> + capex − D&amp;A</td><td class="num neg">−</td></tr>
+              <tr><td>BS · Working capital</td><td>CF · operating</td><td>Δ in operating assets is a use; Δ in operating liabilities is a source</td><td class="num">±</td></tr>
+              <tr><td>CF · investing (capex)</td><td>BS · PP&amp;E</td><td>Driven by the PP&amp;E schedule</td><td class="num neg">−</td></tr>
+              <tr><td>CF · financing (debt)</td><td>BS · Debt</td><td>Driven by the debt schedule</td><td class="num">±</td></tr>
+              <tr><td>Debt schedule · interest</td><td>IS · interest expense</td><td>Rate × debt balance (see circularity below)</td><td class="num neg">−</td></tr>
+              <tr><td>CF · ending cash</td><td>BS · cash</td><td>The single link that closes the model</td><td class="num">=</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <details class="deep">
+          <summary>Why the cash flow statement is a derived document, never an input</summary>
+          <div class="body">
+            <p>In a built model you never forecast the cash flow statement. You forecast the income statement and the balance-sheet drivers (days receivable, days payable, inventory days, capex, debt paydown), and the cash flow statement falls out of them as an arithmetic reconciliation. This is the opposite of how the statement is usually taught, and it's the thing candidates most often get backwards in a modelling test.</p>
+            <p>The consequence is diagnostic: <b>if your balance sheet doesn't balance, the bug is almost never on the cash flow statement itself</b> — it's a balance-sheet line whose movement isn't being carried through to CF, or is being carried through twice.</p>
+          </div>
+        </details>
+
+        <h3><span class="n">02</span>The balance check, and what it actually tests</h3>
+        <p>The check <code>Total assets − (Total liabilities + Equity) = 0</code> looks like a formatting nicety. It isn't. It is a live proof that every balance-sheet movement in the period has exactly one cash-flow explanation. Build it as a row that runs across every forecast period, and give it conditional formatting — you want it screaming in the second you break it, not three schedules later.</p>
+
+        <div class="callout warn">
+          <span class="label">Two failure modes people confuse</span>
+          <p>An <b>off-by-a-constant</b> break (the same error in every period) is usually a historical hardcode or a missing opening-balance link. An <b>error that grows each period</b> is a flow problem — a balance-sheet item moving without a corresponding cash-flow line, compounding forward. Diagnose by looking at the <em>shape</em> of the break across the row before you touch a single formula.</p>
+        </div>
+
+        <details class="deep">
+          <summary>Diagnostic sequence when the balance sheet breaks</summary>
+          <div class="body">
+            <ol>
+              <li>Read the break across the row. Constant → hardcode/opening balance. Growing → a flow.</li>
+              <li>Take the first period that breaks and note the magnitude — the number itself is usually recognisable (it equals capex, or the dividend, or the debt repayment).</li>
+              <li>Check sign conventions on working capital. An <em>increase</em> in receivables is a <em>use</em> of cash. Most models are built with all CF items entered as positives and the formula subtracting; mixing the two conventions in one schedule is the single most common cause.</li>
+              <li>Confirm every balance-sheet line has a driver: walk the balance sheet top to bottom and name the cash-flow line that moves it. Any line without one is your bug.</li>
+              <li>Confirm ending cash on the CF equals the cash line on the BS — that link is often the one broken by an inserted row.</li>
+              <li>Confirm dividends hit retained earnings <em>and</em> financing, once each.</li>
+            </ol>
+          </div>
+        </details>
+
+        <h3><span class="n">03</span>Circularity: interest ↔ debt ↔ cash</h3>
+        <p>This is where a working model stops being a linear chain. Interest expense depends on the debt balance; the debt balance depends on how much cash is available to sweep; available cash depends on net income; net income depends on interest expense. Excel calls this a circular reference and, by default, refuses.</p>
+        <p>The standard resolutions, and when each is right:</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Approach</th><th>What it does</th><th>Use when</th></tr></thead>
+            <tbody>
+              <tr><td>Iterative calculation on</td><td>Excel solves the loop by repeated substitution (File → Options → Formulas, ~100 iterations, 0.001 change)</td><td>Your own model, and you understand the failure mode below</td></tr>
+              <tr><td>Opening-balance interest</td><td>Charge interest on the <em>beginning</em> debt balance only — breaks the loop entirely</td><td>Timed modelling tests, models shared widely, anything auditable</td></tr>
+              <tr><td>Circuit breaker</td><td>A toggle cell that forces interest to zero, flushing <code>#REF!</code>/<code>#VALUE!</code> cascades out of the loop</td><td>Always, if you turn iteration on</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <span class="label">The call I'd make</span>
+          <p>Know how to build the iterative version — FMVA teaches it and it's the technically correct treatment when debt moves materially during the year. But in a live modelling test under time pressure, <b>use opening-balance interest and say out loud that you're doing it to avoid circularity</b>. Interviewers read that as judgment, not as a shortcut. A model that returns a number beats an elegant one full of zeros because the iteration blew up.</p>
+        </div>
+
+        <details class="deep">
+          <summary>Average vs. opening balance — the actual trade-off</summary>
+          <div class="body">
+            <p>Interest on the <em>average</em> of opening and closing debt is more accurate when the balance changes a lot within the period: it approximates the fact that the company held the debt for only part of the year. Interest on the <em>opening</em> balance overstates interest in a deleveraging year and understates it in a year of new issuance.</p>
+            <p>The accuracy gain is real but usually second-order — on a company paying 6% on $500m of debt that amortises $50m in the year, the difference is roughly 6% × $25m ≈ $1.5m of pre-tax expense. Weigh that against a model that can silently produce a wrong answer if the iteration doesn't converge. In a debt-heavy context (an LBO), the average-balance treatment earns its keep and you build the circuit breaker properly. In a plain operating model, it usually doesn't.</p>
+          </div>
+        </details>
+
+        <h3><span class="n">04</span>The cash sweep and the revolver plug</h3>
+        <p>Cash cannot go negative. Once the model is closed, that constraint has to be enforced by something, and that something is the revolver: if the cash flow statement would drive cash below a minimum operating balance, the revolver draws the shortfall; if there's surplus cash above that minimum, it repays the revolver, then sweeps against term debt if the credit agreement requires it.</p>
+        <p>Two things bankers care about that FMVA underplays:</p>
+        <ul>
+          <li><b>The minimum cash balance is an assumption, not zero.</b> Real businesses need working cash. Setting it to zero flatters free cash flow and understates the revolver.</li>
+          <li><b>The plug must be the revolver, never cash and never equity.</b> If your model balances because you plugged a hardcode into cash or "other assets," you have a model that balances and lies. This is a specific, fatal tell in a modelling test.</li>
+        </ul>
+
+        <h3><span class="n">05</span>The walkthrough you will be asked</h3>
+        <p>"Depreciation increases by $10. Walk me through the three statements." The point of the question is not arithmetic — it's whether you understand that the three statements are one system. Use a 25% tax rate unless you're given one; state the rate you're using.</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Statement</th><th>Line</th><th class="num">Δ</th><th>Reasoning</th></tr></thead>
+            <tbody>
+              <tr><td rowspan="3">Income statement</td><td>D&amp;A</td><td class="num">+10</td><td>The change itself</td></tr>
+              <tr><td>Pre-tax income</td><td class="num neg">−10</td><td>D&amp;A is an expense</td></tr>
+              <tr><td>Net income</td><td class="num neg">−7.5</td><td>−10 × (1 − 25%); taxes fall by 2.5</td></tr>
+              <tr><td rowspan="2">Cash flow</td><td>NI, then add back D&amp;A</td><td class="num">−7.5 +10</td><td>D&amp;A never left the business</td></tr>
+              <tr><td>Ending cash</td><td class="num pos">+2.5</td><td>The entire effect is the tax saved</td></tr>
+              <tr><td rowspan="3">Balance sheet</td><td>Cash</td><td class="num pos">+2.5</td><td>From the CF statement</td></tr>
+              <tr><td>PP&amp;E, net</td><td class="num neg">−10</td><td>Accumulated depreciation rises</td></tr>
+              <tr><td>Retained earnings</td><td class="num neg">−7.5</td><td>Assets −7.5 = equity −7.5. Balances.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The line that separates a good answer from a passable one: <b>"cash is up 2.5, which is the depreciation tax shield — $10 of deduction at a 25% rate."</b> Say that, and you've shown you know <em>why</em>, not just what.</p>
+
+        <div class="drill">
+          <p class="q">Drill · Same question, but the company is loss-making and has no taxable income. What changes?</p>
+          <button type="button" data-reveal>Show answer</button>
+          <div class="a" hidden>
+            <p>There is no tax shield to capture, so cash doesn't move at all. Net income falls the full 10, D&amp;A of 10 is added back, cash is flat. On the balance sheet, PP&amp;E −10 and retained earnings −10. It still balances, but the +2.5 is gone.</p>
+            <p>The follow-up, if they're pushing: the deduction isn't destroyed, it becomes part of a net operating loss carryforward — a deferred tax asset that shields cash taxes in a future profitable year, subject to the relevant limitation rules. That's where an interviewer testing depth is heading.</p>
+          </div>
+        </div>
+
+        <div class="drill">
+          <p class="q">Drill · Why can't you build the model by forecasting the cash flow statement directly?</p>
+          <button type="button" data-reveal>Show answer</button>
+          <div class="a" hidden>
+            <p>Because the cash flow statement has no independent drivers. Every line on it is a restatement of something already forecast on the income statement or implied by a balance-sheet assumption. Forecasting it directly means forecasting the same quantity twice, from two places, with nothing forcing the two to agree — and the balance sheet then can't close except by a plug.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <span class="label">Why this matters for M&amp;A specifically</span>
+          <p>The three-statement model is not a deliverable in banking — it's the engine underneath the ones that are. An accretion/dilution analysis needs the target's and acquirer's income statements linked through a pro-forma balance sheet with new debt, new intangibles and their amortisation. An LBO needs the full debt schedule and cash sweep running off exactly these links, over five to seven years. A DCF needs unlevered free cash flow, which is assembled from IS and BS lines — not lifted from the cash flow statement.</p>
+          <p>Practically: the reason analysts can build a working operating model in a morning is that the linkage is muscle memory, and their attention goes to the assumptions. Get the mechanics automatic now and the judgment is what you're left thinking about.</p>
+        </div>
+
+        <details class="deep">
+          <summary>What a banker's model adds on top of the FMVA template</summary>
+          <div class="body">
+            <ul>
+              <li><b>Quarterly stubs and calendarisation.</b> Deals close mid-year; targets have non-calendar fiscal year-ends. You need the model to produce a stub period and to restate a June year-end onto a December basis to compare against comps.</li>
+              <li><b>LTM columns.</b> Last-twelve-months figures = last full year + current stub − prior-year stub. Every trading multiple you quote is built on this.</li>
+              <li><b>A real debt schedule.</b> Multiple tranches, different rates and amortisation, mandatory vs. optional prepayment, cash sweep percentages, and covenant tests calculated off the model rather than typed in.</li>
+              <li><b>Scenario switching.</b> One driver cell moving the whole model between management, base and downside cases (<code>CHOOSE</code> or <code>INDEX</code>, not <code>IF</code> chains).</li>
+              <li><b>Formatting as a language.</b> Blue for hardcoded inputs, black for formulas, green for links from another sheet. Not decoration — it's how the next person audits your work in thirty seconds, and it's noticed in a test.</li>
+            </ul>
+          </div>
+        </details>
+
+        <div class="followups">
+          <span class="label">Follow-ups · added as you ask</span>
+          <div class="fu">
+            <div class="stamp">2026-09-01 · on §03</div>
+            <h4>"Why exactly does average-balance interest create a circular reference, when opening-balance interest doesn't?"</h4>
+            <p>Because of what each formula reads. Opening-balance interest reads <em>last</em> period's closing debt — a number that is already final before this period calculates. The chain runs one way: prior debt → interest → net income → cash → this period's debt. No loop.</p>
+            <p>Average-balance interest reads <em>this</em> period's closing debt, which hasn't been determined yet: closing debt depends on the sweep, the sweep depends on cash available, cash available depends on net income, and net income depends on the interest you are trying to calculate. The formula is an input to itself. Excel detects the loop and returns 0 unless iterative calculation is enabled, at which point it guesses, recalculates, and repeats until the change between passes falls under the tolerance.</p>
+            <p><b>The example is the mechanism:</b> this block is what a follow-up question looks like once it's been written back into the note — stamped, filed under the section it came from, and here the next time you open the page instead of buried in a chat log.</p>
+          </div>
+        </div>
+
+        <div class="tags">
+          <span class="tag">3-statement</span><span class="tag">circularity</span><span class="tag">balance check</span>
+          <span class="tag">revolver</span><span class="tag">cash sweep</span><span class="tag">interview</span>
+          <span class="tag">depreciation tax shield</span><span class="tag">working capital</span>
+        </div>
+      </article>
+
+      <!-- ============================== QUEUE ============================== -->
+      <article class="note queue" id="queue" data-key="queue">
+        <div class="eyebrow">Awaiting your course text</div>
+        <h2>What goes here next</h2>
+        <p>Paste a module's text — or a screenshot, or your own lecture notes — and it becomes a note in the same shape as the one above: one-line thesis, layered mechanics, banking callout, drills. Roughly the running order I'd suggest for an M&amp;A track:</p>
+        <ol>
+          <li>Accounting fundamentals — only the parts that bite in a model (accruals, deferred tax, leases)</li>
+          <li>Excel mechanics and modelling best practice</li>
+          <li><b>Three-statement model</b> — done above</li>
+          <li>Forecasting drivers and scenario design</li>
+          <li>DCF: unlevered FCF, terminal value, mid-year convention</li>
+          <li>WACC, CAPM, beta unlevering and relevering</li>
+          <li>Comparable company analysis and precedent transactions</li>
+          <li>Enterprise value vs. equity value bridge</li>
+          <li>M&amp;A modelling: accretion/dilution, purchase price allocation, synergies</li>
+          <li>LBO modelling: sources &amp; uses, returns attribution</li>
+          <li>Sensitivity analysis and data tables</li>
+          <li>Presenting the output: football fields, board-ready charts</li>
+        </ol>
+        <p style="color:var(--muted);font-size:.9375rem">Tell me if a topic should be skipped as already-known, or flagged for extra depth — the note takes the calibration you give it.</p>
+      </article>
+
+      <p class="noresult" id="noresult" hidden>Nothing in the notes matches that. Try a shorter term.</p>
+    </main>
+  </div>
+
+  <footer class="foot">Republished to the same link each time it grows · last updated 2026-09-01</footer>
+</div>
+
+<script>
+(function(){
+  var LS_OPEN = "fmva.open.v1", LS_DONE = "fmva.done.v1";
+  function read(k){ try{ return JSON.parse(localStorage.getItem(k)||"{}"); }catch(e){ return {}; } }
+  function write(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+  /* --- disclosure state ------------------------------------------------- */
+  var openState = read(LS_OPEN);
+  var deeps = Array.prototype.slice.call(document.querySelectorAll("details.deep"));
+  deeps.forEach(function(d,i){
+    var id = "d"+i;
+    if (openState[id]) d.open = true;
+    d.addEventListener("toggle", function(){ openState[id] = d.open; write(LS_OPEN, openState); });
+  });
+  document.getElementById("expand").addEventListener("click", function(){
+    deeps.forEach(function(d){ d.open = true; });
+  });
+  document.getElementById("collapse").addEventListener("click", function(){
+    deeps.forEach(function(d){ d.open = false; });
+  });
+
+  /* --- understood checkboxes -------------------------------------------- */
+  var doneState = read(LS_DONE);
+  var boxes = Array.prototype.slice.call(document.querySelectorAll("[data-done]"));
+  var progress = document.getElementById("progress");
+  function paint(){
+    var n = 0;
+    boxes.forEach(function(b){
+      var card = b.closest("article.note");
+      if (b.checked){ n++; card.classList.add("done"); } else { card.classList.remove("done"); }
+    });
+    progress.textContent = n + " of " + boxes.length + " marked understood";
+  }
+  boxes.forEach(function(b){
+    var k = b.getAttribute("data-done");
+    b.checked = !!doneState[k];
+    b.addEventListener("change", function(){ doneState[k] = b.checked; write(LS_DONE, doneState); paint(); });
+  });
+  paint();
+
+  /* --- drill reveals ----------------------------------------------------- */
+  document.querySelectorAll("[data-reveal]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var a = btn.parentNode.querySelector(".a");
+      a.hidden = !a.hidden;
+      btn.textContent = a.hidden ? "Show answer" : "Hide answer";
+    });
+  });
+
+  /* --- filter ------------------------------------------------------------ */
+  var q = document.getElementById("q");
+  var notes = Array.prototype.slice.call(document.querySelectorAll("article.note"));
+  var noresult = document.getElementById("noresult");
+  q.addEventListener("input", function(){
+    var term = q.value.trim().toLowerCase();
+    var hits = 0;
+    notes.forEach(function(n){
+      var match = !term || n.textContent.toLowerCase().indexOf(term) !== -1;
+      n.hidden = !match;
+      if (match) hits++;
+    });
+    noresult.hidden = hits > 0;
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "/" && document.activeElement !== q){ e.preventDefault(); q.focus(); q.select(); }
+    if (e.key === "Escape" && document.activeElement === q){ q.value = ""; q.dispatchEvent(new Event("input")); q.blur(); }
+  });
+})();
+</script>
