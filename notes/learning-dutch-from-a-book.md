@@ -158,6 +158,42 @@ into "I can speak Dutch." The goal is to force **production**, not just comprehe
 
 ---
 
+## Session protocol: how we drill every word/grammar point you send me
+
+This turns the research above into a repeatable, low-effort routine for this chat: you drop in
+a word or grammar point whenever you meet one (in the book, at work, wherever), and every reply
+follows the same four-part structure so it's simultaneously an explanation, a sentence-mining
+card, and a retrieval quiz — the three highest-leverage techniques from the research above,
+applied automatically instead of something you have to remember to do yourself.
+
+For every word or grammar point you send, I will give you:
+
+1. **Plain-English explanation** — what it means, its part of speech/conjugation pattern, and
+   anything irregular or easy to mix up (gender for nouns, separable vs. inseparable for verbs,
+   register/formality).
+2. **Dutch example sentences in context** — real conversational sentences, not textbook-flat
+   ones, so the word is learned attached to a situation (sentence mining).
+3. **When you'd actually use it** — concrete situations, **prioritizing your office/work life
+   first** since that's your highest-frequency daily context right now (standups, emails to
+   colleagues, small talk at the coffee machine, asking your manager something, meetings), with
+   general daily-life situations as a secondary set.
+4. **A short retrieval quiz** — 2–4 quick questions (translate, fill-in-the-blank, or "make your
+   own sentence") that make you *produce* the word/rule instead of just re-reading it (testing
+   effect). Once we've covered a few items, quizzes will start mixing in older words/grammar
+   points on a spaced schedule instead of only testing the newest one, so review happens
+   automatically without you having to run a separate flashcard system.
+
+**Why office-first:** personally relevant, high-frequency context is itself a memory hook (see
+§2 vocabulary point 6) — words tied to something you'll say at work again tomorrow stick faster
+than words tied to a one-off textbook scenario.
+
+**Running log:** to make the "mix in older items" part of the quiz actually work across
+sessions, keep (or ask me to keep) a running list of what's been covered in
+`notes/dutch-progress-log.md`, with the date first covered — that list is what future quizzes
+should sample from for spaced review.
+
+---
+
 Sources consulted:
 - [Sentence Mining: How to Build Vocabulary That Actually Sticks](https://www.clozemaster.com/blog/sentence-mining/)
 - [Spaced Repetition Language Learning and Long-Term Retention](https://www.pimsleur.com/blog/why-graduated-interval-recall-is-the-key-to-mastering-a-new-language/)
