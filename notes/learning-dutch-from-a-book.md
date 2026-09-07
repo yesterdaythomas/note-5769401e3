@@ -182,6 +182,11 @@ For every word or grammar point you send, I will give you:
    effect). Once we've covered a few items, quizzes will start mixing in older words/grammar
    points on a spaced schedule instead of only testing the newest one, so review happens
    automatically without you having to run a separate flashcard system.
+5. **A pronunciation link** — a [Forvo](https://forvo.com/languages/nl/) link for the word
+   (native-speaker audio clips), so you're never learning a word by spelling alone. Forvo covers
+   individual words well; for full sentences, [Google Translate](https://translate.google.com/?sl=nl&tl=en)
+   (paste the sentence, click the speaker icon) or [Reverso Context](https://context.reverso.net/translation/dutch-english/)
+   (real sentences with audio) work better since Forvo mostly indexes single words.
 
 **Why office-first:** personally relevant, high-frequency context is itself a memory hook (see
 §2 vocabulary point 6) — words tied to something you'll say at work again tomorrow stick faster
