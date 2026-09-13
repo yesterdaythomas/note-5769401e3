@@ -131,6 +131,11 @@ into "I can speak Dutch." The goal is to force **production**, not just comprehe
 
 ## A simple weekly rhythm to tie it together
 
+**Order within a single session:** review due vocab first (low-effort warm-up), then new grammar
+while you're freshest (pattern-noticing takes the most working memory), then new vocab from that
+chapter tied to the grammar you just learned — so you can immediately build example sentences
+that use both together.
+
 - **New chapter (grammar + vocab):** read once, guess the rule from examples first, then read
   the explanation.
 - **Same day:** pull 8–12 new words as sentence-flashcards (word + full sentence it came from).
