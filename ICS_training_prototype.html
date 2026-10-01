@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control Town - Prototype</title>
+<style>
+  :root {
+    --bg: #14213d; --panel: #1f3158; --panel2: #2a406e; --ink: #f4f1de; --muted: #b8c0d4;
+    --accent: #fca311; --good: #4ecb71; --bad: #ef5b5b; --line: #3b5288;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Trebuchet MS", system-ui, sans-serif; line-height: 1.45; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: #0d1730; border-bottom: 3px solid var(--accent); flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: 1px; font-family: "Courier New", monospace; }
+  .hud { display: flex; gap: 14px; font-family: "Courier New", monospace; font-size: 14px; }
+  .bar { width: 120px; height: 12px; background: #0d1730; border: 2px solid var(--line); display: inline-block; vertical-align: middle; }
+  .bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s; }
+  main { max-width: 960px; margin: 0 auto; padding: 16px; }
+  .banner { background: var(--panel2); border-left: 4px solid var(--accent); padding: 8px 12px; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .map { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .tile { background: var(--panel); border: 3px solid var(--line); padding: 14px; cursor: pointer; text-align: left; color: var(--ink); font: inherit; transition: transform .1s, border-color .1s; }
+  .tile:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .tile .icon { font-size: 34px; display: block; }
+  .tile b { display: block; margin-top: 4px; font-size: 16px; }
+  .tile small { color: var(--muted); display: block; margin-top: 4px; }
+  .tile.done { border-color: var(--good); }
+  .tile.preview { opacity: .65; border-style: dashed; }
+  .tag { float: right; font-size: 11px; font-family: "Courier New", monospace; padding: 2px 6px; background: #0d1730; color: var(--muted); }
+  .tile.done .tag { color: var(--good); }
+  .card { background: var(--panel); border: 3px solid var(--line); padding: 16px; margin-top: 12px; }
+  .card h2, .card h3 { margin-top: 0; }
+  button.btn { background: var(--accent); color: #14213d; border: 0; padding: 9px 16px; font: inherit; font-weight: bold; cursor: pointer; margin: 4px 6px 4px 0; }
+  button.btn.alt { background: var(--panel2); color: var(--ink); border: 2px solid var(--line); }
+  button.btn:disabled { opacity: .45; cursor: default; }
+  button.opt { display: block; width: 100%; text-align: left; background: var(--panel2); color: var(--ink); border: 2px solid var(--line); padding: 10px 12px; margin: 6px 0; font: inherit; cursor: pointer; }
+  button.opt:hover:not(:disabled) { border-color: var(--accent); }
+  button.opt.right { border-color: var(--good); background: #1d4a35; }
+  button.opt.wrong { border-color: var(--bad); background: #5a2631; }
+  .fb { margin-top: 10px; padding: 10px 12px; background: #0d1730; border-left: 4px solid var(--accent); }
+  .fb.good { border-color: var(--good); } .fb.bad { border-color: var(--bad); }
+  .video { background: #0d1730; border: 3px dashed var(--line); padding: 30px; text-align: center; color: var(--muted); margin: 10px 0; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 3px solid var(--line); }
+  .tab { background: var(--panel2); color: var(--ink); border: 0; padding: 8px 12px; cursor: pointer; font: inherit; }
+  .tab.on { background: var(--accent); color: #14213d; font-weight: bold; }
+  .file { background: #f4f1de; color: #222; padding: 14px; margin-top: 0; }
+  .file .row { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #cfc9ab; }
+  .file .row:last-child { border-bottom: 0; }
+  .file .lbl { font-size: 12px; color: #6b6650; text-transform: uppercase; letter-spacing: .5px; }
+  .flag { background: #fff; border: 2px solid #b9b394; cursor: pointer; padding: 3px 8px; font-size: 13px; white-space: nowrap; }
+  .flag.on { background: var(--bad); color: #fff; border-color: var(--bad); }
+  .clue { font-family: "Courier New", monospace; color: var(--accent); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } .bar { width: 70px; } }
+  .chip { display: inline-block; background: var(--panel2); border: 2px solid var(--line); padding: 6px 10px; margin: 4px 4px 4px 0; }
+  .big { font-size: 22px; font-family: "Courier New", monospace; color: var(--accent); }
+  ul.clean { padding-left: 18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>&#127961; CONTROL TOWN</h1>
+  <div class="hud">
+    <span>XP <b id="xp">0</b></span>
+    <span>Progress <span class="bar"><i id="prog"></i></span></span>
+  </div>
+</header>
+<main id="app"></main>
+
+<script>
+/* ---------- state ---------- */
+var state = { xp: 0, done: {} };
+var TOTAL_PLAYABLE = 4;
+
+function save() { try { sessionStorage.setItem('ct_proto', JSON.stringify(state)); } catch (e) {} }
+function load() { try { var s = sessionStorage.getItem('ct_proto'); if (s) state = JSON.parse(s); } catch (e) {} }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+function addXp(n) { state.xp = Math.max(0, state.xp + n); }
+function finish(id, xp) {
+  if (!state.done[id]) { state.done[id] = true; addXp(xp); }
+  save();
+}
+function hud() {
+  document.getElementById('xp').textContent = state.xp;
+  var n = Object.keys(state.done).length;
+  document.getElementById('prog').style.width = Math.round(100 * n / TOTAL_PLAYABLE) + '%';
+}
+var app = document.getElementById('app');
+function show(html) { app.innerHTML = html; hud(); window.scrollTo(0, 0); }
+
+/* ---------- map ---------- */
+var districts = [
+  { id: 'hall',    icon: '&#127963;', name: 'Town Hall',        sub: 'Welcome and why we do internal control', play: true,  fn: townHall },
+  { id: 'cycle',   icon: '&#128260;',   name: 'Cycle Square',     sub: 'The four steps of the cycle', play: true,  fn: cycleGame },
+  { id: 'tool',    icon: '&#128188;', name: 'Tool Tower',       sub: 'Your tool and your role (executor, reviewer)', play: false, preview: 'Click-through of a simplified tool, then match each role to its tasks.' },
+  { id: 'evid',    icon: '&#128193;', name: 'Evidence Archive', sub: 'What counts as evidence?', play: true,  fn: sortGame },
+  { id: 'review',  icon: '&#128269;', name: 'Review Office',    sub: 'Case file: inspect, flag, decide', play: true,  fn: caseFile },
+  { id: 'issue',   icon: '&#128678;', name: 'Issue Desk',       sub: 'Issues and remediation', play: false, preview: 'Pick-your-reply scenarios: what do you do when a control fails?' },
+  { id: 'finish',  icon: '&#127942;', name: 'Finish Line',      sub: 'Final quiz and badge', play: false, preview: 'Mixed final quiz. Pass to earn the Control Town badge.' }
+];
+
+function map() {
+  var allDone = Object.keys(state.done).length >= TOTAL_PLAYABLE;
+  var h = '<div class="banner">PROTOTYPE with made-up content. Four districts are playable, three are shown as previews. Click a district to start.</div><div class="map">';
+  districts.forEach(function (d) {
+    var cls = 'tile' + (state.done[d.id] ? ' done' : '') + (d.play ? '' : ' preview');
+    var tag = d.play ? (state.done[d.id] ? 'DONE' : 'PLAY') : 'PREVIEW';
+    h += '<button class="' + cls + '" data-id="' + d.id + '"><span class="tag">' + tag + '</span><span class="icon">' + d.icon + '</span><b>' + d.name + '</b><small>' + d.sub + '</small></button>';
+  });
+  h += '</div>';
+  if (allDone) h += '<div class="card"><h3>&#127941; All playable districts complete</h3><p>XP earned: <span class="big">' + state.xp + '</span>. In the real version this is where the badge and the completion signal to the learning platform would be.</p><button class="btn alt" id="reset">Play again</button></div>';
+  show(h);
+  Array.prototype.forEach.call(document.querySelectorAll('.tile'), function (t) {
+    t.onclick = function () {
+      var d = districts.filter(function (x) { return x.id === t.getAttribute('data-id'); })[0];
+      if (d.play) d.fn(); else preview(d);
+    };
+  });
+  var r = document.getElementById('reset');
+  if (r) r.onclick = function () { state = { xp: 0, done: {} }; save(); map(); };
+}
+function backBtn() { return '<button class="btn alt" onclick="map()">&larr; Back to map</button>'; }
+
+function preview(d) {
+  show('<div class="card"><h2>' + d.icon + ' ' + d.name + ' <span class="tag">PREVIEW</span></h2><p>' + d.preview + '</p><p style="color:var(--muted)">Not built in this prototype.</p>' + backBtn() + '</div>');
+}
+
+/* ---------- generic quiz helper ---------- */
+function quiz(title, intro, questions, doneId, xpEach, extraTop) {
+  var i = 0, correct = 0;
+  function render() {
+    if (i >= questions.length) {
+      finish(doneId, xpEach * correct);
+      show('<div class="card"><h2>' + title + ' complete</h2><p>You got <span class="big">' + correct + '/' + questions.length + '</span> right. +' + (xpEach * correct) + ' XP</p>' + backBtn() + '</div>');
+      return;
+    }
+    var q = questions[i];
+    var h = '<div class="card"><h2>' + title + '</h2>' + (i === 0 ? (extraTop || '') + '<p>' + intro + '</p>' : '') +
+      '<h3>Question ' + (i + 1) + ' of ' + questions.length + '</h3><p>' + q.q + '</p><div id="opts">';
+    q.o.forEach(function (o, k) { h += '<button class="opt" data-k="' + k + '">' + o + '</button>'; });
+    h += '</div><div id="fb"></div></div>';
+    show(h);
+    Array.prototype.forEach.call(document.querySelectorAll('.opt'), function (b) {
+      b.onclick = function () {
+        var k = +b.getAttribute('data-k'), ok = k === q.a;
+        if (ok) correct++;
+        Array.prototype.forEach.call(document.querySelectorAll('.opt'), function (x, n) {
+          x.disabled = true;
+          if (n === q.a) x.classList.add('right'); else if (n === k) x.classList.add('wrong');
+        });
+        document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'good' : 'bad') + '"><b>' + (ok ? 'Correct.' : 'Not quite.') + '</b> ' + q.why + '</div><button class="btn" id="next">' + (i + 1 < questions.length ? 'Next' : 'Finish') + '</button>';
+        document.getElementById('next').onclick = function () { i++; render(); };
+      };
+    });
+  }
+  render();
+}
+
+/* ---------- 1. Town Hall ---------- */
+function townHall() {
+  quiz('&#127963; Town Hall',
+    'Welcome to Control Town. Your mission: learn how to show that a control really happened.',
+    [
+      { q: 'Why do we do internal control?',
+        o: ['To give the ICS team extra work', 'To protect the company and make sure key controls really work', 'Only because the auditors ask'],
+        a: 1, why: 'Controls protect the company, its people and its numbers. Auditors are one reason, not the only one.' },
+      { q: 'A colleague says: "Trust me, the control was done." Is that enough?',
+        o: ['Yes, we trust our colleagues', 'No, we need evidence that shows it was done', 'Only if the colleague is senior'],
+        a: 1, why: 'This is the key message of the training: a statement is not evidence.' }
+    ],
+    'hall', 10,
+    '<div class="video">&#127909; Placeholder: short welcome video from senior management ("tone at the top")</div>');
+}
+
+/* ---------- 2. Cycle Square (order the steps) ---------- */
+function cycleGame() {
+  var steps = [
+    { n: 'Risk assessment', d: 'Find out what could go wrong' },
+    { n: 'Allocation', d: 'Give each control an owner' },
+    { n: 'Monitoring', d: 'Test and review that controls work' },
+    { n: 'Improvement', d: 'Raise issues and fix what failed' }
+  ];
+  var picked = [];
+  var order = [2, 0, 3, 1]; // fixed scramble, indices into steps
+  function render(msg) {
+    var h = '<div class="card"><h2>&#128260; Cycle Square</h2><p>The ICS cycle has four steps. Click the steps in the right order, starting with step 1.</p>';
+    h += '<p>Your order: ' + (picked.length ? picked.map(function (p, k) { return '<span class="chip">' + (k + 1) + '. ' + steps[p].n + '</span>'; }).join('') : '<span style="color:var(--muted)">nothing yet</span>') + '</p>';
+    order.forEach(function (idx) {
+      var used = picked.indexOf(idx) > -1;
+      h += '<button class="opt" data-i="' + idx + '"' + (used ? ' disabled' : '') + '><b>' + steps[idx].n + '</b> &ndash; ' + steps[idx].d + '</button>';
+    });
+    if (msg) h += '<div class="fb bad">' + msg + '</div>';
+    h += '</div>';
+    show(h);
+    Array.prototype.forEach.call(document.querySelectorAll('.opt'), function (b) {
+      b.onclick = function () {
+        var idx = +b.getAttribute('data-i');
+        if (idx === picked.length) { picked.push(idx); if (picked.length === 4) win(); else render(); }
+        else { picked = []; render('That one does not come next. Order reset, try again.'); }
+      };
+    });
+  }
+  function win() {
+    finish('cycle', 20);
+    show('<div class="card"><h2>&#128260; Cycle Square complete</h2><p>' + steps.map(function (s, k) { return '<span class="chip">' + (k + 1) + '. ' + s.n + '</span>'; }).join('') + '</p><p>+20 XP. Every control starts as a risk, gets an owner, is monitored, and feeds improvement.</p>' + backBtn() + '</div>');
+  }
+  render();
+}
+
+/* ---------- 3. Evidence Archive (sort) ---------- */
+function sortGame() {
+  var cards = [
+    { t: 'A dated screenshot showing the approval in the system', e: true, why: 'It shows what happened, who did it and when.' },
+    { t: '"It is all in SAP, anyone can check it."', e: false, why: 'A statement. The reviewer cannot verify it from the file.' },
+    { t: 'A report extract listing the 25 sampled items, with dates', e: true, why: 'It is the sample itself, so the test can be checked.' },
+    { t: '"We always do this every month."', e: false, why: 'A claim about habit, not proof for this period.' },
+    { t: 'A signed approval email with the date visible', e: true, why: 'It shows who approved and when.' },
+    { t: 'A general policy document with no date or sample', e: false, why: 'It explains the rule, not that the control was performed.' }
+  ];
+  var i = 0, right = 0;
+  function render() {
+    if (i >= cards.length) {
+      finish('evid', right * 5);
+      show('<div class="card"><h2>&#128193; Evidence Archive complete</h2><p><span class="big">' + right + '/' + cards.length + '</span> sorted correctly. +' + (right * 5) + ' XP</p><div class="fb good"><b>Rule to remember:</b> a statement is not evidence. Attach what shows the control was performed.</div>' + backBtn() + '</div>');
+      return;
+    }
+    show('<div class="card"><h2>&#128193; Evidence Archive</h2><p>Is this evidence that a control was performed? (' + (i + 1) + '/' + cards.length + ')</p><div class="video" style="color:var(--ink);font-size:18px;border-style:solid">' + cards[i].t + '</div><button class="btn" data-a="1">&#10003; Evidence</button><button class="btn alt" data-a="0">&#10007; Not evidence</button><div id="fb"></div></div>');
+    Array.prototype.forEach.call(document.querySelectorAll('button[data-a]'), function (b) {
+      b.onclick = function () {
+        var ok = (b.getAttribute('data-a') === '1') === cards[i].e;
+        if (ok) right++;
+        Array.prototype.forEach.call(document.querySelectorAll('button[data-a]'), function (x) { x.disabled = true; });
+        document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'good' : 'bad') + '"><b>' + (ok ? 'Correct.' : 'Not quite.') + '</b> ' + cards[i].why + '</div><button class="btn" id="next">Next</button>';
+        document.getElementById('next').onclick = function () { i++; render(); };
+      };
+    });
+  }
+  render();
+}
+
+/* ---------- 4. Review Office (case file) ---------- */
+function caseFile() {
+  var tabs = [
+    { id: 'ctl', name: 'Control', rows: [
+      { id: 'c1', l: 'Control', v: 'FIN-000: Monthly supplier payment approval (made-up)' },
+      { id: 'c2', l: 'Executor says', v: 'Compliant' },
+      { id: 'c3', l: 'Period', v: 'September' }
+    ]},
+    { id: 'att', name: 'Testing attributes', rows: [
+      { id: 'a1', l: 'Was the approval performed before payment?', v: 'Yes' },
+      { id: 'a2', l: 'Sample tested', v: '(blank: no sample listed)', clue: 'sample', cl: 'No sample is stated, so we do not know what was tested.' },
+      { id: 'a3', l: 'Approver authorised?', v: 'Yes' }
+    ]},
+    { id: 'files', name: 'Attachments', rows: [
+      { id: 'f1', l: 'Files attached', v: 'None', clue: 'noattach', cl: 'No evidence is attached at all.' }
+    ]},
+    { id: 'exp', name: 'Explanation', rows: [
+      { id: 'e1', l: 'Executor explanation', v: '"SAP is the source of data and the whole process works, so anyone can check it in SAP."', clue: 'statement', cl: 'The explanation is a statement. It does not show what was tested or the result.' }
+    ]},
+    { id: 'jrn', name: 'Journal', rows: [
+      { id: 'j1', l: 'Due date', v: '8 October' },
+      { id: 'j2', l: 'Closed on', v: '7 October (on time)' },
+      { id: 'j3', l: 'Last update', v: 'Executor, no comments from anyone else' }
+    ]}
+  ];
+  var cluesTotal = 3, flagged = {};
+  var cur = 'ctl', stage = 'inspect', verdict = null, reply = null;
+
+  function renderInspect() {
+    var t = tabs.filter(function (x) { return x.id === cur; })[0];
+    var h = '<div class="card"><h2>&#128269; Review Office: Case 1</h2>' +
+      '<p>An executor marked this control <b>Compliant</b>. You are the reviewer. Open each tab and press &#128681; on anything that looks wrong. You can flag anything, but wrong flags cost XP.</p>' +
+      '<div class="tabs">' + tabs.map(function (x) { return '<button class="tab' + (x.id === cur ? ' on' : '') + '" data-t="' + x.id + '">' + x.name + '</button>'; }).join('') + '</div>' +
+      '<div class="file">' + t.rows.map(function (r) {
+        return '<div class="row"><div><div class="lbl">' + r.l + '</div>' + esc(r.v) + '</div><button class="flag' + (flagged[r.id] ? ' on' : '') + '" data-r="' + r.id + '">&#128681; ' + (flagged[r.id] ? 'Flagged' : 'Flag') + '</button></div>';
+      }).join('') + '</div>' +
+      '<p><button class="btn" id="go">Give my verdict (' + Object.keys(flagged).filter(function (k) { return flagged[k]; }).length + ' flagged)</button></p></div>';
+    show(h);
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) { b.onclick = function () { cur = b.getAttribute('data-t'); renderInspect(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('.flag'), function (b) { b.onclick = function () { var r = b.getAttribute('data-r'); flagged[r] = !flagged[r]; renderInspect(); }; });
+    document.getElementById('go').onclick = function () { stage = 'verdict'; renderVerdict(); };
+  }
+
+  function renderVerdict() {
+    var opts = ['Pass', 'Pass with improvements', 'Fail'];
+    var h = '<div class="card"><h2>&#9878; Your verdict</h2><p>Based on what you found, how would you rate this control?</p>' +
+      opts.map(function (o, k) { return '<button class="opt" data-k="' + k + '">' + o + '</button>'; }).join('') + '</div>';
+    show(h);
+    Array.prototype.forEach.call(document.querySelectorAll('.opt'), function (b) {
+      b.onclick = function () { verdict = +b.getAttribute('data-k'); renderReply(); };
+    });
+  }
+
+  function renderReply() {
+    var opts = [
+      'Accept it. SAP is a reliable system.',
+      'Ask the executor to attach evidence (the sample and a dated extract) and explain what was tested.',
+      'Close it as Fail without a word to the executor.'
+    ];
+    var h = '<div class="card"><h2>&#128172; The executor replies</h2><div class="fb">"But it is all in SAP! The whole process works, you can look it up yourself."</div><p>What do you answer?</p>' +
+      opts.map(function (o, k) { return '<button class="opt" data-k="' + k + '">' + o + '</button>'; }).join('') + '</div>';
+    show(h);
+    Array.prototype.forEach.call(document.querySelectorAll('.opt'), function (b) {
+      b.onclick = function () { reply = +b.getAttribute('data-k'); renderDebrief(); };
+    });
+  }
+
+  function renderDebrief() {
+    var found = 0, wrong = 0, missed = [];
+    tabs.forEach(function (t) { t.rows.forEach(function (r) {
+      if (r.clue && flagged[r.id]) found++;
+      else if (r.clue) missed.push(r.cl);
+      else if (flagged[r.id]) wrong++;
+    }); });
+    var xp = found * 10 - wrong * 5 + (verdict === 2 ? 20 : 0) + (reply === 1 ? 10 : 0);
+    finish('review', Math.max(0, xp));
+    var h = '<div class="card"><h2>&#128196; Debrief</h2>' +
+      '<p>Clues found: <span class="big">' + found + '/' + cluesTotal + '</span>' + (wrong ? ' &nbsp; Wrong flags: <b>' + wrong + '</b> (-' + (wrong * 5) + ' XP)' : '') + '</p>' +
+      (missed.length ? '<div class="fb bad"><b>You missed:</b><ul class="clean">' + missed.map(function (m) { return '<li>' + m + '</li>'; }).join('') + '</ul></div>' : '<div class="fb good">You found every clue.</div>') +
+      '<div class="fb ' + (verdict === 2 ? 'good' : 'bad') + '"><b>Verdict:</b> ' + (verdict === 2 ? 'Fail is right.' : 'The expected answer is Fail.') + ' Nothing is attached and the explanation does not say what was tested, so there is no support for "Compliant". Note that "closed on time" is not an issue here.</div>' +
+      '<div class="fb ' + (reply === 1 ? 'good' : 'bad') + '"><b>Your reply:</b> ' + (reply === 1 ? 'Good. You explained what is missing and how to fix it.' : 'Better: ask for the sample and a dated extract, and explain why. Accepting on trust or failing without explanation does not help the executor.') + '</div>' +
+      '<div class="fb good"><b>Rule to remember:</b> a statement is not evidence. "It is in the system" is not proof.</div>' +
+      '<p>+' + Math.max(0, xp) + ' XP</p>' + backBtn() + '</div>';
+    show(h);
+  }
+  renderInspect();
+}
+
+load();
+map();
+</script>
+</body>
+</html>
